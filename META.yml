@@ -1,0 +1,42 @@
+---
+name: Module-CPANTS-ProcessCPAN
+version: 0.6
+author:
+  - 'Thomas Klausner, <domm@cpan.org>, http://domm.zsi.at'
+abstract: Generate Kwalitee ratings for the whole CPAN
+license: perl
+resources:
+  license: http://dev.perl.org/licenses/
+requires:
+  Class::Accessor: 0.19
+  DBIx::Class: 0.06002
+  GD::Graph: 1.00
+  Module::CPANTS::Analyse: 0.60
+  Module::CoreList: 1.98
+  Parse::CPAN::Authors: 2.24
+  Parse::CPAN::Packages: 2.25
+provides:
+  Module::CPANTS::DB:
+    file: lib/Module/CPANTS/DB.pm
+    version: 0.6
+  Module::CPANTS::DB::Author:
+    file: lib/Module/CPANTS/DB/Author.pm
+  Module::CPANTS::DB::Dist:
+    file: lib/Module/CPANTS/DB/Dist.pm
+  Module::CPANTS::DB::Kwalitee:
+    file: lib/Module/CPANTS/DB/Kwalitee.pm
+  Module::CPANTS::DB::Modules:
+    file: lib/Module/CPANTS/DB/Modules.pm
+  Module::CPANTS::DB::Prereq:
+    file: lib/Module/CPANTS/DB/Prereq.pm
+  Module::CPANTS::DB::Run:
+    file: lib/Module/CPANTS/DB/Run.pm
+  Module::CPANTS::DB::Uses:
+    file: lib/Module/CPANTS/DB/Uses.pm
+  Module::CPANTS::ProcessCPAN:
+    file: lib/Module/CPANTS/ProcessCPAN.pm
+    version: 0.6
+generated_by: Module::Build version 0.28
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2
