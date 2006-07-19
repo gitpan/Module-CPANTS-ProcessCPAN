@@ -25,7 +25,7 @@ my @bar_defaults=(
 foreach (
     {
         title=>'Kwalitee Distribution',
-        sql=>'select kwalitee,count(kwalitee) as cnt from kwalitee group by kwalitee order by kwalitee',
+        sql=>'select abs_kw,count(abs_kw) as cnt from kwalitee group by abs_kw order by abs_kw',
         lablex=>'Kwalitee',
         labley=>'Distributions',
     },

@@ -2,14 +2,16 @@
 use strict;
 use warnings;
 use Module::CPANTS::ProcessCPAN;
+use Getopt::Long;
 
-die "Usage: analyse_cpan.pl path/to/minicpan path/to/cpants_lint.pl" unless @ARGV ==2;
-my $path_cpan=shift(@ARGV);
-my $path_lint=shift(@ARGV) || 'cpants_lint.pl';
-die "Cannot find cpants_lint.pl (in $path_lint)" unless -e $path_lint;
+my %opts;
+GetOptions(\%opts,qw(force cpan=s lint=s));
 
-my $p=Module::CPANTS::ProcessCPAN->new($path_cpan,$path_lint);
-$p->lint($path_lint);
+die "Usage: analyse_cpan.pl --cpan path/to/minicpan --lint path/to/cpants_lint.pl" unless $opts{cpan} && $opts{lint};
+die "Cannot find cpants_lint.pl (in ".$opts{lint}.")" unless -e $opts{lint};
+
+my $p=Module::CPANTS::ProcessCPAN->new($opts{cpan},$opts{lint});
+$p->force(1) if $opts{force};
 $p->start_run->process_cpan;
 
 

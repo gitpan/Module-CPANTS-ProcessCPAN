@@ -12,61 +12,73 @@ use File::Spec::Functions qw(catdir catfile rel2abs);
 use Parse::CPAN::Packages;
 
 use vars qw($VERSION);
-$VERSION=0.60;
+$VERSION=0.61;
 
-__PACKAGE__->mk_accessors(qw(cpan lint run _db));
+__PACKAGE__->mk_accessors(qw(cpan lint force run prev_run _db));
 
 sub new {
     my ($class,$cpan,$lint)=@_;
 
-    croak "Cannot find root of local CPAN mirror (location $cpan)" unless -d $cpan;
-
-    my $self=bless {},$class;
-    $self->cpan(rel2abs($cpan));
-    unless ($lint) {
-        $lint=`which cpants_lint.pl`;
-        chomp($lint);
-        die "Cannot find cpants_lint.pl" unless $lint;
-    }
-    $self->lint(rel2abs($lint));
-    return $self;
+    my $me=bless {},$class;
+    $me->cpan(rel2abs($cpan));
+    $me->lint(rel2abs($lint));
+    return $me;
 }
 
 sub start_run {
-    my $self=shift;
+    my $me=shift;
 
     my $mck=Module::CPANTS::Kwalitee->new;
     my $total_kwalitee=scalar @{$mck->get_indicators};
     
-    my $run=$self->db->resultset('Run')->create({
+    # prev run
+    my @prev=$me->db->resultset('Run')->search(
+        {},
+        {
+            order_by=>'date desc',
+            rows=>1,
+        }
+    );
+    $me->prev_run($prev[0]);
+        
+    my $run=$me->db->resultset('Run')->create({
         version=>$Module::CPANTS::Analyse::VERSION,
         date=>scalar localtime,
         available_kwalitee=>$total_kwalitee,
     });
-    $self->run($run);
-    return $self;
+    $me->run($run);
+
+    
+    return $me;
 }
 
 
 sub process_cpan {
-    my $self=shift;
+    my $me=shift;
     
-    my $p=Parse::CPAN::Packages->new($self->cpan_02packages);
-    my $db=$self->db;
-    my $lint=$self->lint;
+    my $p=Parse::CPAN::Packages->new($me->cpan_02packages);
+    my $db=$me->db;
+    my $lint=$me->lint;
+    my $run=$me->run;
     
     foreach my $dist (sort {$a->dist cmp $b->dist} $p->latest_distributions) {
         my $vname=$dist->distvname;
-        
-        my @exists=$db->resultset('Dist')->search(dist=>$dist->dist);
-        if (@exists > 0) {
+       
+        my $exists=$db->resultset('Dist')->find(dist=>$dist->dist);
+        if ($exists) {
             # check version
-            if ($exists[0]->vname && $vname eq $exists[0]->vname) {
-                print "skip ".$dist->dist." (".($dist->version || '?').")\n";
-                next;
+            if ($exists->vname && $vname eq $exists->vname) {
+                if ($me->force) {
+                    print "forced reindex of ".$dist->dist." (".$dist->version." )\n";
+                    $me->make_dist_history($exists); 
+                    $exists->delete;
+                } else {
+                    next;
+                }
             } else {
-                print "new version of ".($dist->dist || '?')." (".$exists[0]->version." -> ".($dist->version || '?')." )\n";
-                $exists[0]->delete;
+                print "new version of ".($dist->dist || '?')." (".($exists->version || '?')." -> ".($dist->version || '?')." )\n";
+                $me->make_dist_history($exists); 
+                $exists->delete;
             }
         }
         
@@ -81,7 +93,7 @@ sub process_cpan {
         # todo: store immediatly in DB so we can catch "bad" dists that fail
         # completely
         
-        my $file=$self->cpan_path_to_dist($dist->prefix);
+        my $file=$me->cpan_path_to_dist($dist->prefix);
         
         # call cpants_lint.pl (fork because I think it's easier)
         my $lintresult=`$^X $lint -d $file`;
@@ -107,8 +119,11 @@ sub process_cpan {
         # save author 
         eval { 
             $db_author=$db->resultset('Author')->find_or_create(pauseid=>$author);
+            $me->make_author_history($db_author);
+            
             $db_dist=$db_author->add_to_dists({ 
                 dist=>$dist->dist,
+                run=>$run->id,
                 %$data
             })
         };
@@ -129,46 +144,89 @@ sub process_cpan {
             }
         };
         if ($@) {
+            $db_dist->cpants_errors($db_dist->cpants_errors."\nDB:\n$@");
             $db->txn_rollback;
-            $db_dist->cpants_errors($db_dist->cpants_errors."\nDB:\n$@");                   $kwalitee->{no_cpants_errors}=0;
-            $kwalitee->{kwalitee}--;
+            $kwalitee->{no_cpants_errors}=0;
         } else {
             $db->txn_commit;
         }
 
         $db->txn_begin;
-        eval {$db_dist->add_to_kwalitee($kwalitee || {})};
+        eval {
+            $kwalitee->{dist}=$db_dist->id;
+            $kwalitee->{run}=$run->id;
+            $kwalitee->{kwalitee}=0;
+            $db->resultset('Kwalitee')->create($kwalitee);
+        };
         if ($@) {
+            my $e=$@;
             $db->txn_rollback;
-            croak $dist->dist." DB kwalitee error: $@";
+            croak $dist->dist." DB kwalitee error: $e";
         } else {
             $db->txn_commit;
         }
     }
 }
 
+
+sub make_author_history {
+    my $me=shift;
+    my $author=shift;
+    
+    my $db=$me->db;
+
+    $db->txn_begin;
+    $db->resultset('AuthHist')->create({
+        run=>$me->run->id,
+        author=>$author->id,
+        average_kwalitee=>$author->average_kwalitee || 0,
+        num_dists=>$author->num_dists || 0,
+        rank=>$author->rank || 0,
+    });
+    $db->txn_commit;
+    
+    # set conveniece fields in current author
+    $author->prev_av_kw($author->average_kwalitee || 0);
+    $author->prev_rank($author->rank|| 0);
+    $author->update; 
+}
+
+sub make_dist_history {
+    my ($me,$dist)=@_;
+    
+    my $old_kw=$dist->kwalitee ? $dist->kwalitee->kwalitee : 0;
+    
+    $me->db->resultset('DistHist')->find_or_create({
+        run=>$me->run->id,
+        distname=>$dist->dist,
+        version=>$dist->version,
+        kwalitee=>$old_kw,
+    });
+    
+}
+
 sub db {
-    my $self=shift;
-    return $self->_db if $self->_db;
+    my $me=shift;
+    return $me->_db if $me->_db;
    
     my $name = $INC{'Test/More.pm'} ? 'test_cpants' : 'cpants';
-    return $self->_db(Module::CPANTS::DB->connect('dbi:Pg:dbname='.$name,$ENV{CPANTS_USER},$ENV{CPANTS_PWD}));
+    return $me->_db(Module::CPANTS::DB->connect('dbi:Pg:dbname='.$name,$ENV{CPANTS_USER},$ENV{CPANTS_PWD}));
 }
 
 sub cpan_01mailrc {
-    my $self=shift;
-    return catfile($self->cpan,'authors','01mailrc.txt.gz');
+    my $me=shift;
+    return catfile($me->cpan,'authors','01mailrc.txt.gz');
 }
 
 sub cpan_02packages {
-    my $self=shift;
-    return catfile($self->cpan,'modules','02packages.details.txt.gz');
+    my $me=shift;
+    return catfile($me->cpan,'modules','02packages.details.txt.gz');
 }
 
 sub cpan_path_to_dist {
-    my $self=shift;
+    my $me=shift;
     my $prefix=shift;
-    return catfile($self->cpan,'authors','id',$prefix);
+    return catfile($me->cpan,'authors','id',$prefix);
 }
 
 

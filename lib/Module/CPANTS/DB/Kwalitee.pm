@@ -8,7 +8,8 @@ __PACKAGE__->table('kwalitee');
 __PACKAGE__->add_columns(qw(
 id
 dist
-kwalitee
+run
+kwalitee abs_kw rel_core_kw abs_core_kw
 extractable
 extracts_nicely
  has_version
@@ -27,6 +28,7 @@ extracts_nicely
  has_test_pod
  has_test_pod_coverage
  no_pod_errors    
+ has_working_buildtool
 ));
 
 __PACKAGE__->set_primary_key('id');

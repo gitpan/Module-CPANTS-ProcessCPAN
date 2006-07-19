@@ -1,9 +1,18 @@
 #-----------------------------------------------------------------
 # Changes for Module::CPANTS::ProcessCPAN
-# $Rev: 4025 $
-# $Date: 2006-05-18T19:48:13.600735Z $ 
+# $Rev: 4207 $
+# $Date: 2006-07-19T23:02:32.471595Z $ 
 #-----------------------------------------------------------------
 
+0.61    2007-07-20
+    - added MCK::BrokenInstaller
+    - removed bugs in author hist
+    - added --force to analyse_cpan.pl
+    - used Getopt::Long in analyse_cpan.pl
+    - changed kwalitee to a percentage, added abs_kw
+    - added distinction between normal and optional metrics
+    - changed caluclation of rank in CPANTS game
+    
 
 0.60    2006-05-18
     - first release

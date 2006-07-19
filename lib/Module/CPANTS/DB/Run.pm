@@ -9,5 +9,4 @@ __PACKAGE__->add_columns(qw(id version available_kwalitee date));
 __PACKAGE__->set_primary_key('id');
 
 
-
 'Listening to: Slaven Rezic - Perl und Unicode (German Perl Workshop';

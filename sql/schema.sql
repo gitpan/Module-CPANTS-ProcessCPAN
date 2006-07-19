@@ -16,17 +16,21 @@ create table author (
    email text,
    average_kwalitee numeric,
    num_dists integer,
-   rank integer
+   rank integer,
+   prev_av_kw numeric,
+   prev_rank integer
 );
 create index auth_av on author(average_kwalitee);
 create index auth_num on author(num_dists);
 create index auth_rank on author(rank);
+create index auth_pav on author(prev_av_kw);
+create index auth_prank on author(prev_rank);
 
 create table author_history (
    id serial primary key,
    run integer references run (id),
    author integer references author (id),
-   average_kwalitee integer,
+   average_kwalitee numeric,
    num_dists integer,
    rank integer
 );
@@ -36,6 +40,7 @@ create index auth_hist_rank on author_history(rank);
 
 create table dist (
    id serial primary key,
+   run integer references run (id) ON DELETE SET NULL;, 
    dist text UNIQUE,
    package text UNIQUE,
    vname text UNIQUE,

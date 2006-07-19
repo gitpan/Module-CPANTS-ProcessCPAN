@@ -6,52 +6,18 @@ use base qw(DBIx::Class);
 __PACKAGE__->load_components(qw(PK::Auto::Pg Core));
 __PACKAGE__->table('dist');
 __PACKAGE__->add_columns(qw(
-id
-bad_permissions
-bad_permissions_list
-cpants_errors
-dir_lib
-dir_t
-dirs
-dirs_list
-dist
-vname
-extension
-extractable
-extracts_nicely
-file_build_pl
-file_changelog
-file_makefile_pl
-file_manifest
-file_meta_yml
-file_ninja
-file_readme
-file_signature
-file_test_pl
-files
-files_list
-package
-author
-pod_errors
-released
-size_packed
-size_unpacked
-symlinks
-symlinks_list
-version
-version_major
-version_minor
+id run
+bad_permissions bad_permissions_list cpants_errors dir_lib dir_t dirs dirs_list dist vname extension extractable extracts_nicely file_build_pl file_changelog file_makefile_pl file_manifest file_meta_yml file_ninja file_readme file_signature file_test_pl files files_list package author pod_errors released size_packed size_unpacked symlinks symlinks_list version version_major version_minor broken_module_install
 ));
 
 __PACKAGE__->set_primary_key('id');
 
-__PACKAGE__->has_many('kwalitee'=>'Module::CPANTS::DB::Kwalitee');
+__PACKAGE__->has_one('kwalitee'=>'Module::CPANTS::DB::Kwalitee','dist');
 __PACKAGE__->has_many('modules'=>'Module::CPANTS::DB::Modules');
 __PACKAGE__->has_many('prereq'=>'Module::CPANTS::DB::Prereq');
 __PACKAGE__->has_many('uses'=>'Module::CPANTS::DB::Uses');
 __PACKAGE__->has_many('requiring'=>'Module::CPANTS::DB::Prereq','in_dist');
-
-
+__PACKAGE__->belongs_to('run'=>'Module::CPANTS::DB::Run');
 __PACKAGE__->belongs_to('author'=>'Module::CPANTS::DB::Author');
 
 use Data::Dumper;
