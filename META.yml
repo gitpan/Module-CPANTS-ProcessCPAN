@@ -1,6 +1,6 @@
 ---
 name: Module-CPANTS-ProcessCPAN
-version: 0.61
+version: 0.62
 author:
   - 'Thomas Klausner, <domm@cpan.org>, http://domm.zsi.at'
 abstract: Generate Kwalitee ratings for the whole CPAN
@@ -19,10 +19,14 @@ provides:
   Module::CPANTS::DB:
     file: lib/Module/CPANTS/DB.pm
     version: 0.6
+  Module::CPANTS::DB::AuthHist:
+    file: lib/Module/CPANTS/DB/AuthHist.pm
   Module::CPANTS::DB::Author:
     file: lib/Module/CPANTS/DB/Author.pm
   Module::CPANTS::DB::Dist:
     file: lib/Module/CPANTS/DB/Dist.pm
+  Module::CPANTS::DB::DistHist:
+    file: lib/Module/CPANTS/DB/DistHist.pm
   Module::CPANTS::DB::Kwalitee:
     file: lib/Module/CPANTS/DB/Kwalitee.pm
   Module::CPANTS::DB::Modules:
@@ -35,7 +39,7 @@ provides:
     file: lib/Module/CPANTS/DB/Uses.pm
   Module::CPANTS::ProcessCPAN:
     file: lib/Module/CPANTS/ProcessCPAN.pm
-    version: 0.61
+    version: 0.62
 generated_by: Module::Build version 0.2801
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

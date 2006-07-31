@@ -12,7 +12,7 @@ use File::Spec::Functions qw(catdir catfile rel2abs);
 use Parse::CPAN::Packages;
 
 use vars qw($VERSION);
-$VERSION=0.61;
+$VERSION=0.62;
 
 __PACKAGE__->mk_accessors(qw(cpan lint force run prev_run _db));
 
@@ -60,11 +60,11 @@ sub process_cpan {
     my $db=$me->db;
     my $lint=$me->lint;
     my $run=$me->run;
-    
+     
     foreach my $dist (sort {$a->dist cmp $b->dist} $p->latest_distributions) {
         my $vname=$dist->distvname;
        
-        my $exists=$db->resultset('Dist')->find(dist=>$dist->dist);
+        my $exists=$db->resultset('Dist')->find({dist=>$dist->dist});
         if ($exists) {
             # check version
             if ($exists->vname && $vname eq $exists->vname) {
@@ -118,7 +118,7 @@ sub process_cpan {
         $db->txn_begin;
         # save author 
         eval { 
-            $db_author=$db->resultset('Author')->find_or_create(pauseid=>$author);
+            $db_author=$db->resultset('Author')->find_or_create({pauseid=>$author});
             $me->make_author_history($db_author);
             
             $db_dist=$db_author->add_to_dists({ 
@@ -164,6 +164,18 @@ sub process_cpan {
             croak $dist->dist." DB kwalitee error: $e";
         } else {
             $db->txn_commit;
+        }
+    }
+
+    # dump old dists
+    my @distributions=$p->distributions;
+    my %dists=map {$_->dist => 1}  @distributions;
+
+    my $rs=$db->resultset('Dist')->search;
+    while (my $in_db=$rs->next) {
+        unless ($dists{$in_db->dist}) {
+            print $in_db->dist." not on CPAN anymore, deleted from DB\n";
+            $in_db->delete;
         }
     }
 }
@@ -228,8 +240,6 @@ sub cpan_path_to_dist {
     my $prefix=shift;
     return catfile($me->cpan,'authors','id',$prefix);
 }
-
-
 
 1;
 

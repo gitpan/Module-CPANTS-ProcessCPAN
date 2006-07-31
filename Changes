@@ -1,8 +1,17 @@
 #-----------------------------------------------------------------
 # Changes for Module::CPANTS::ProcessCPAN
-# $Rev: 4207 $
-# $Date: 2006-07-19T23:02:32.471595Z $ 
+# $Rev: 4235 $
+# $Date: 2006-07-31T19:51:13.266500Z $ 
 #-----------------------------------------------------------------
+
+
+0.62    2007-07-31
+    - added t/99_pod.t test (I'm not in the mood right now to write docs
+      so t/99_pod_coverage.t has to wait a bit...)
+    - adapted DBIx::Class calls to 0.07000
+    - delete dist from DB if they are no longer on CPAN
+      thanks to BDFOY and TINITA for pointing it out.
+
 
 0.61    2007-07-20
     - added MCK::BrokenInstaller
