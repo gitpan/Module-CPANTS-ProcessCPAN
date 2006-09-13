@@ -1,11 +1,15 @@
 #-----------------------------------------------------------------
 # Changes for Module::CPANTS::ProcessCPAN
-# $Rev: 4235 $
-# $Date: 2006-07-31T19:51:13.266500Z $ 
+# $Rev: 4302 $
+# $Date: 2006-09-13T06:40:36.246205Z $ 
 #-----------------------------------------------------------------
 
+0.63    2006-09-13
+    - added new metrics to DB Classes (has_license, has_example,
+      buildtool_not_executable, manifest_matches_dist
 
-0.62    2007-07-31
+      
+0.62    2006-07-31
     - added t/99_pod.t test (I'm not in the mood right now to write docs
       so t/99_pod_coverage.t has to wait a bit...)
     - adapted DBIx::Class calls to 0.07000

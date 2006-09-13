@@ -29,7 +29,11 @@ extracts_nicely
  has_test_pod_coverage
  no_pod_errors    
  has_working_buildtool
-));
+ manifest_matches_dist
+ buildtool_not_executable
+ has_example
+ has_license
+ ));
 
 __PACKAGE__->set_primary_key('id');
 __PACKAGE__->belongs_to('dist'=>'Module::CPANTS::DB::Dist');
