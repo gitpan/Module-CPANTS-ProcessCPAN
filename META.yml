@@ -1,6 +1,6 @@
 ---
 name: Module-CPANTS-ProcessCPAN
-version: 0.63
+version: 0.64
 author:
   - 'Thomas Klausner, <domm@cpan.org>, http://domm.zsi.at'
 abstract: Generate Kwalitee ratings for the whole CPAN
@@ -9,6 +9,7 @@ resources:
   license: http://dev.perl.org/licenses/
 requires:
   Class::Accessor: 0.19
+  DBD::Pg: 1.49
   DBIx::Class: 0.06002
   GD::Graph: 1.00
   Module::CPANTS::Analyse: 0.60
@@ -39,8 +40,8 @@ provides:
     file: lib/Module/CPANTS/DB/Uses.pm
   Module::CPANTS::ProcessCPAN:
     file: lib/Module/CPANTS/ProcessCPAN.pm
-    version: 0.63
-generated_by: Module::Build version 0.2801
+    version: 0.64
+generated_by: Module::Build version 0.2805
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
   version: 1.2

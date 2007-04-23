@@ -1,8 +1,16 @@
 #-----------------------------------------------------------------
 # Changes for Module::CPANTS::ProcessCPAN
-# $Rev: 4302 $
-# $Date: 2006-09-13T06:40:36.246205Z $ 
+# $Rev$
+# $Date$ 
 #-----------------------------------------------------------------
+
+0.64    2007-04-23
+    - moved svn repo to http://code.google.com/p/cpants/
+    - added DBD::Pg to depencies, reported by MSTEVENS as RT #26377
+    - first create a dist object, add the data later in another eval. This
+      way more dists should end up in the DB. (eg Lingua-DE-ASCII, which 
+      includes latin1 filenames that cause problems in the (utf8) db)
+
 
 0.63    2006-09-13
     - added new metrics to DB Classes (has_license, has_example,
@@ -17,7 +25,7 @@
       thanks to BDFOY and TINITA for pointing it out.
 
 
-0.61    2007-07-20
+0.61    2006-07-20
     - added MCK::BrokenInstaller
     - removed bugs in author hist
     - added --force to analyse_cpan.pl

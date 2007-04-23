@@ -9,6 +9,8 @@ __PACKAGE__->add_columns(qw(id run distname kwalitee version));
 
 __PACKAGE__->set_primary_key('id');
 
+__PACKAGE__->belongs_to('run'=>'Module::CPANTS::DB::Run');
+
 #__PACKAGE__->has_many('kwalitee'=>'Module::CPANTS::DB::Kwalitee');
 #__PACKAGE__->has_many('modules'=>'Module::CPANTS::DB::Modules');
 #__PACKAGE__->has_many('prereq'=>'Module::CPANTS::DB::Prereq');

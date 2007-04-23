@@ -32,7 +32,11 @@ extracts_nicely
  manifest_matches_dist
  buildtool_not_executable
  has_example
- has_license
+ has_humanreadable_license
+ metayml_is_parsable
+ metayml_conforms_spec_1_0
+ metayml_conforms_spec_current
+ metayml_has_license
  ));
 
 __PACKAGE__->set_primary_key('id');

@@ -12,7 +12,7 @@ use File::Spec::Functions qw(catdir catfile rel2abs);
 use Parse::CPAN::Packages;
 
 use vars qw($VERSION);
-$VERSION=0.63;
+$VERSION=0.64;
 
 __PACKAGE__->mk_accessors(qw(cpan lint force run prev_run _db));
 
@@ -51,7 +51,6 @@ sub start_run {
     
     return $me;
 }
-
 
 sub process_cpan {
     my $me=shift;
@@ -110,7 +109,7 @@ sub process_cpan {
         my $uses=$data->{uses};
         my $prereq=$data->{prereq};
         my $author=$data->{author};
-        foreach (qw(kwalitee modules uses prereq files_array dirs_array author)) {
+        foreach (qw(kwalitee modules uses prereq files_array dirs_array author meta_yml)) {
             delete $data->{$_};
         }
         
@@ -124,15 +123,16 @@ sub process_cpan {
             $db_dist=$db_author->add_to_dists({ 
                 dist=>$dist->dist,
                 run=>$run->id,
-                %$data
             })
         };
         $db->txn_commit;
-        print "DB ERROR: dist: $@" and next if $@; 
+        print "DB ERROR: cannot create dist: $@" and next if $@; 
 
-        # add stuff to other tables
+        # add data and add stuff to other tables
         $db->txn_begin;
         eval {
+            $db_dist->update($data);
+            
             foreach my $m (@$modules) {
                 $db_dist->add_to_modules($m);
             }
@@ -179,7 +179,6 @@ sub process_cpan {
         }
     }
 }
-
 
 sub make_author_history {
     my $me=shift;
