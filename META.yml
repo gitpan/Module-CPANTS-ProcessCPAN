@@ -1,6 +1,6 @@
 ---
 name: Module-CPANTS-ProcessCPAN
-version: 0.64
+version: v0.70
 author:
   - 'Thomas Klausner, <domm@cpan.org>, http://domm.zsi.at'
 abstract: Generate Kwalitee ratings for the whole CPAN
@@ -12,22 +12,17 @@ requires:
   DBD::Pg: 1.49
   DBIx::Class: 0.06002
   GD::Graph: 1.00
-  Module::CPANTS::Analyse: 0.60
+  Module::CPANTS::Analyse: 0.72
   Module::CoreList: 1.98
   Parse::CPAN::Authors: 2.24
   Parse::CPAN::Packages: 2.25
 provides:
   Module::CPANTS::DB:
     file: lib/Module/CPANTS/DB.pm
-    version: 0.6
-  Module::CPANTS::DB::AuthHist:
-    file: lib/Module/CPANTS/DB/AuthHist.pm
   Module::CPANTS::DB::Author:
     file: lib/Module/CPANTS/DB/Author.pm
   Module::CPANTS::DB::Dist:
     file: lib/Module/CPANTS/DB/Dist.pm
-  Module::CPANTS::DB::DistHist:
-    file: lib/Module/CPANTS/DB/DistHist.pm
   Module::CPANTS::DB::Kwalitee:
     file: lib/Module/CPANTS/DB/Kwalitee.pm
   Module::CPANTS::DB::Modules:
@@ -38,10 +33,18 @@ provides:
     file: lib/Module/CPANTS/DB/Run.pm
   Module::CPANTS::DB::Uses:
     file: lib/Module/CPANTS/DB/Uses.pm
+  Module::CPANTS::DBHistory:
+    file: lib/Module/CPANTS/DBHistory.pm
+  Module::CPANTS::DBHistory::Author:
+    file: lib/Module/CPANTS/DBHistory/Author.pm
+  Module::CPANTS::DBHistory::Dist:
+    file: lib/Module/CPANTS/DBHistory/Dist.pm
+  Module::CPANTS::DBHistory::Run:
+    file: lib/Module/CPANTS/DBHistory/Run.pm
   Module::CPANTS::ProcessCPAN:
     file: lib/Module/CPANTS/ProcessCPAN.pm
-    version: 0.64
-generated_by: Module::Build version 0.2805
+    version: v0.70
+generated_by: Module::Build version 0.280801
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
   version: 1.2
