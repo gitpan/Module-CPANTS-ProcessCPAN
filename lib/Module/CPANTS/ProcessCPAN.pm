@@ -16,9 +16,9 @@ use YAML::Syck qw(LoadFile);
 use FindBin;
 use File::Copy;
 
-use version; our $VERSION=qv('0.70');
+use version; our $VERSION=version->new('0.71');
 
-__PACKAGE__->mk_accessors(qw(cpan lint force run prev_run _db _db_hist process_dir out_dir));
+__PACKAGE__->mk_accessors(qw(cpan lint force run prev_run _db _db_hist));
 
 sub new {
     my ($class,$cpan,$lint)=@_;
@@ -68,6 +68,7 @@ sub process_cpan {
     my $p=Parse::CPAN::Packages->new($me->cpan_02packages);
     my $lint=$me->lint;
     my $analysed=$me->yaml_analysed;
+    my $processed=$me->yaml_processed;
 
     foreach my $dist (sort {$a->dist cmp $b->dist} $p->latest_distributions) {
         my $vname=$dist->distvname;
@@ -76,18 +77,18 @@ sub process_cpan {
         next if $vname=~/^Perl6-Pugs/;
         next if $vname=~/^parrot-/;
         next if $vname=~/^Bundle-/;
-
-        if (-e catfile($analysed,$vname.'.yml')) {
+        
+        if (-e catfile($processed,$vname.'.yml')) {
             if ($me->force) {
-                print "forced reindex of ".$dist->dist." (".$dist->version." )\n";
+                print "forced reindex of $vname\n";
             }
             else {
-                print "skipping ".$dist->dist." (".$dist->version." )\n";
+                print "skipping $vname\n";
                 next;
             }
         }
         else {
-            print "new version of ".$dist->dist." (".$dist->version." )\n";
+            print "new version of $vname\n";
         }
     
         print "analyse $vname\n";
@@ -140,7 +141,7 @@ sub process_yaml {
         }
         
         my ($db_author,$db_dist);
-        $db->txn_begin;
+        
         # save author 
         eval { 
             $db_author=$db->resultset('Author')->find_or_create({pauseid=>$author});
@@ -151,11 +152,9 @@ sub process_yaml {
                 run=>$run->id,
             })
         };
-        $db->txn_commit;
         print "DB ERROR: cannot create dist: $@" and next if $@; 
 
         # add data and add stuff to other tables
-        $db->txn_begin;
         eval {
             $db_dist->update($data);
             
@@ -174,14 +173,12 @@ sub process_yaml {
             if (my $old=$db_dist->cpants_errors) {
                 $from_cpants="$old\n";
             }
+            print "$@\n";
             $db_dist->cpants_errors(join('',$from_cpants,"DB: $@"));
-            $db->txn_rollback;
+            $db_dist->update;
             $kwalitee->{no_cpants_errors}=0;
-        } else {
-            $db->txn_commit;
         }
 
-        $db->txn_begin;
         eval {
             $kwalitee->{dist}=$db_dist->id;
             $kwalitee->{run}=$run->id;
@@ -190,13 +187,12 @@ sub process_yaml {
         };
         if ($@) {
             my $e=$@;
-            $db->txn_rollback;
             croak $data->{dist}." DB kwalitee error: $e";
-        } else {
-            $db->txn_commit;
         }
         unlink($absfile);
     }
+
+    return;
 
     # dump old dists
     my @distributions=$p->distributions;
@@ -251,7 +247,7 @@ sub db {
     my $me=shift;
     return $me->_db if $me->_db;
    
-    my $name = catfile($me->root,qw(sqlite cpants.db));
+    my $name = catfile($me->home_dir,qw(sqlite cpants.db));
     return $me->_db(Module::CPANTS::DB->connect('dbi:SQLite:dbname='.$name));
 }
 
@@ -259,7 +255,7 @@ sub db_hist {
     my $me=shift;
     return $me->_db_hist if $me->_db_hist;
    
-    my $name = catfile($me->root,qw(sqlite cpants_history.db));
+    my $name = catfile($me->home_dir,qw(sqlite cpants_history.db));
     return $me->_db_hist(Module::CPANTS::DBHistory->connect("dbi:SQLite:dbname=$name"));
 }
 
@@ -283,13 +279,13 @@ sub cpan_path_to_dist {
 
 =cut
 
-sub root {
+sub home_dir {
     my $me=shift;
-    return Module::CPANTS::ProcessCPAN::ConfigData->config('root');
+    return Module::CPANTS::ProcessCPAN::ConfigData->config('home');
 }
 
-sub yaml_analysed { return catdir(shift->root,qw(yaml analysed)) }
-sub yaml_processed { return catdir(shift->root,qw(yaml processed)) }
+sub yaml_analysed { return catdir(shift->home_dir,qw(yaml analysed)) }
+sub yaml_processed { return catdir(shift->home_dir,qw(yaml processed)) }
 
 1;
 

@@ -2,6 +2,16 @@
 # Changes for Module::CPANTS::ProcessCPAN
 #-----------------------------------------------------------------
 
+
+0.71    2007-10-29
+    - re-added make_graph.pl and update_authors.pl to run.pl
+    - fixed prereq/uses DB filling
+    - fixed some other DB errors
+    - adapted to changes in MC::Analyse 0.75
+    - cleaned up analyse_cpan.pl
+    - added Module::CPANTS::MyBuild to properly install cpants
+
+
 0.70    2007-10-24
     - install cpants properly
     - moved to SQLite instead of postgres
