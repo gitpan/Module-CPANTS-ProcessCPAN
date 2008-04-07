@@ -5,26 +5,26 @@ use warnings;
 
 use base 'DBIx::Class';
 
-__PACKAGE__->load_components("Core");
+__PACKAGE__->load_components("InflateColumn", "PK", "Core");
 __PACKAGE__->table("error");
 __PACKAGE__->add_columns(
   "id",
   {
     data_type => "integer",
-    default_value => "nextval('public.error_id_seq'::text)",
+    default_value => "nextval('error_id_seq'::regclass)",
     is_nullable => 0,
     size => 4,
   },
   "dist",
   { data_type => "integer", default_value => undef, is_nullable => 1, size => 4 },
-  "prereq",
+  "prereq_matches_use",
   {
     data_type => "text",
     default_value => undef,
     is_nullable => 1,
     size => undef,
   },
-  "build_prereq",
+  "build_prereq_matches_use",
   {
     data_type => "text",
     default_value => undef,
@@ -38,7 +38,7 @@ __PACKAGE__->add_columns(
     is_nullable => 1,
     size => undef,
   },
-  "metayml",
+  "metayml_conforms_to_known_spec",
   {
     data_type => "text",
     default_value => undef,
@@ -52,16 +52,63 @@ __PACKAGE__->add_columns(
     is_nullable => 1,
     size => undef,
   },
-  "pod",
-  { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
-  "pod_message",
+  "no_pod_errors",
   {
     data_type => "text",
     default_value => undef,
     is_nullable => 1,
     size => undef,
   },
-  "metayml_parse",
+  "metayml_is_parsable",
+  {
+    data_type => "text",
+    default_value => undef,
+    is_nullable => 1,
+    size => undef,
+  },
+  "no_generated_files",
+  {
+    data_type => "text",
+    default_value => undef,
+    is_nullable => 1,
+    size => undef,
+  },
+  "has_version_in_each_file",
+  {
+    data_type => "text",
+    default_value => undef,
+    is_nullable => 1,
+    size => undef,
+  },
+  "no_stdin_for_prompting",
+  {
+    data_type => "text",
+    default_value => undef,
+    is_nullable => 1,
+    size => undef,
+  },
+  "easily_repackageable_by_fedora",
+  {
+    data_type => "text",
+    default_value => undef,
+    is_nullable => 1,
+    size => undef,
+  },
+  "easily_repackageable_by_debian",
+  {
+    data_type => "text",
+    default_value => undef,
+    is_nullable => 1,
+    size => undef,
+  },
+  "easily_repackageable",
+  {
+    data_type => "text",
+    default_value => undef,
+    is_nullable => 1,
+    size => undef,
+  },
+  "metayml_conforms_spec_current",
   {
     data_type => "text",
     default_value => undef,
@@ -70,11 +117,12 @@ __PACKAGE__->add_columns(
   },
 );
 __PACKAGE__->set_primary_key("id");
+
+
+# Created by DBIx::Class::Schema::Loader v0.04004 @ 2008-04-07 19:01:51
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:G9wgBbGm6EoMaucDp/sfNg
+
 __PACKAGE__->belongs_to("dist", "Module::CPANTS::Schema::Dist", { id => "dist" });
-
-
-# Created by DBIx::Class::Schema::Loader v0.04002 @ 2008-01-09 22:59:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:u6pNt4rPnWGBLcGrXW452Q
 
 
 # You can replace this text with custom content, and it will be preserved on regeneration
