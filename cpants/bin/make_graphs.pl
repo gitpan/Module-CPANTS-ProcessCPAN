@@ -6,6 +6,7 @@ use File::Spec::Functions;
 use GD::Graph;
 use GD::Graph::bars;
 use Module::CPANTS::ProcessCPAN;
+use Module::CPANTS::Kwalitee;
 use Module::CPANTS::Schema;
 use Module::CPANTS::ProcessCPAN::ConfigData;
 my $home=Module::CPANTS::ProcessCPAN::ConfigData->config('home');
@@ -18,11 +19,47 @@ my $DBH=$mcp->db->storage->dbh;
 my $now=localtime();
 my @bar_defaults=(
     bar_spacing     => 8,
-    shadow_depth    => 4,
-    shadowclr       => 'dred',
+#    shadow_depth    => 4,
+#    shadowclr       => 'dred',
     transparent     => 0,
     show_values=>1,
 );
+
+
+# make kwalitee overview
+{
+    my @ok;
+    my @fail;
+    my @lable;
+    my $mck=Module::CPANTS::Kwalitee->new;
+    my @metrics=$mck->get_indicators;
+    my $total_dists=$DBH->selectrow_array("select count(*) from kwalitee");
+    foreach (sort {$a->{name} cmp $b->{name}} @metrics) {
+        my $m=$_->{name};
+        my $ok=$DBH->selectrow_array("select count(*) from kwalitee where $m=1 group by $m") || 0;
+        push(@ok,$ok);
+        push(@fail,$total_dists-$ok);
+        push(@lable,$m);
+    }
+    
+    my $graph=GD::Graph::bars->new(600,600);
+    $graph->set(
+    cumulate=>1,
+		x_label=>'metric',
+		'y_label'=>'dists',
+		title=>"Kwalitee Overview ($now)",
+        x_labels_vertical=>1,
+		'y_max_value'=>$total_dists,
+        dclrs=>[qw(green red)],
+    );
+
+    my $gd=$graph->plot([\@lable,\@ok,\@fail]) || die $graph->error;
+    my $outfile=catfile($outpath,"kwalitee_overview.png");
+    open(IMG, ">",$outfile) or die "$outfile: $!";
+    binmode IMG;
+    print IMG $gd->png;
+}
+
 
 foreach (
     {
@@ -30,6 +67,7 @@ foreach (
         sql=>'select abs_kw,count(abs_kw) as cnt from kwalitee group by abs_kw order by abs_kw',
         lablex=>'Kwalitee',
         labley=>'Distributions',
+        width=>800,
     },
     {
         title=>'Active PAUSE IDs',
@@ -46,6 +84,7 @@ foreach (
         lablex=>'Dists',
         labley=>'Authors',
         width=>800,
+        bar_spacing     => 2,
     },
     {
         title=>'Dists released per year',
@@ -114,6 +153,7 @@ sub make_graph {
     print IMG $gd->png;
     return;
 }
+
 
 __END__
 

@@ -107,12 +107,20 @@ __PACKAGE__->add_columns(
   { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
   "metayml_declares_perl_version",
   { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
+  "no_large_files",
+  { data_type => "integer", default_value => undef, is_nullable => 1, size => 4 },
+  "has_separate_license_file",
+  { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
+  "metayml_has_provides",
+  { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
+  "has_license_in_source_file",
+  { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
 );
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.04004 @ 2008-04-07 19:01:51
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9RWv2OCkxbG3ioa0wmXXww
+# Created by DBIx::Class::Schema::Loader v0.04004 @ 2008-04-12 11:22:03
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Dy0hLws8ru1eiGoTQXgrxA
 
 __PACKAGE__->belongs_to("dist", "Module::CPANTS::Schema::Dist", { id => "dist" });
 
