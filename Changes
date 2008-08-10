@@ -2,6 +2,20 @@
 # Changes for Module::CPANTS::ProcessCPAN
 #-----------------------------------------------------------------
 
+0.77	2008-08-10 13:10:56
+    - added docs on how to set up a CPANTS analyser
+    - Experimental Metric handling
+    - fixed error if there are no test_files
+    - calculate real average kwalitee
+    - fixed deletion of old errors
+    - updated Schema to work with MCA 0.82
+    - added ResultSetManager to schema classes
+    - moved lots of model-related stuff from Module::CPANTS::Site
+      Controllers into Module::CPANTS::ExtractUse::Schema::*
+      (marcus.ramberg)
+    - fixed bug with is_extra/is_experimental in game rank calculation
+
+
 0.76   Sat Apr 12 10:53:53 CEST 2008
     - added kwalitee_overview to graphs
     - adapted db & schema for new metrics

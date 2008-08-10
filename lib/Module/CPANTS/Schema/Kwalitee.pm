@@ -5,7 +5,7 @@ use warnings;
 
 use base 'DBIx::Class';
 
-__PACKAGE__->load_components("InflateColumn", "PK", "Core");
+__PACKAGE__->load_components("ResultSetManager", "InflateColumn", "PK", "Core");
 __PACKAGE__->table("kwalitee");
 __PACKAGE__->add_columns(
   "id",
@@ -16,8 +16,6 @@ __PACKAGE__->add_columns(
     size => 4,
   },
   "dist",
-  { data_type => "integer", default_value => undef, is_nullable => 1, size => 4 },
-  "run",
   { data_type => "integer", default_value => undef, is_nullable => 1, size => 4 },
   "abs_kw",
   { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
@@ -91,6 +89,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
   "no_generated_files",
   { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
+  "run",
+  { data_type => "integer", default_value => undef, is_nullable => 1, size => 4 },
   "has_version_in_each_file",
   { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
   "has_tests_in_t_dir",
@@ -111,16 +111,26 @@ __PACKAGE__->add_columns(
   { data_type => "integer", default_value => undef, is_nullable => 1, size => 4 },
   "has_separate_license_file",
   { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
+  "has_license_in_source_file",
+  { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
   "metayml_has_provides",
   { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
-  "has_license_in_source_file",
+  "uses_test_nowarnings",
+  { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
+  "latest_version_distributed_by_debian",
+  { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
+  "has_no_bugs_reported_in_debian",
+  { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
+  "has_no_patches_in_debian",
+  { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
+  "distributed_by_debian",
   { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
 );
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.04004 @ 2008-04-12 11:22:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Dy0hLws8ru1eiGoTQXgrxA
+# Created by DBIx::Class::Schema::Loader v0.04004 @ 2008-06-03 23:19:44
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:x2kZvqEHWav0NIhzY/tyOQ
 
 __PACKAGE__->belongs_to("dist", "Module::CPANTS::Schema::Dist", { id => "dist" });
 

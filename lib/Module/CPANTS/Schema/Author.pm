@@ -5,7 +5,7 @@ use warnings;
 
 use base 'DBIx::Class';
 
-__PACKAGE__->load_components("InflateColumn", "PK", "Core");
+__PACKAGE__->load_components("ResultSetManager", "InflateColumn", "PK", "Core");
 __PACKAGE__->table("author");
 __PACKAGE__->add_columns(
   "id",
@@ -56,12 +56,14 @@ __PACKAGE__->add_columns(
   },
   "prev_rank",
   { data_type => "integer", default_value => 0, is_nullable => 0, size => 4 },
+  "average_total_kwalitee",
+  { data_type => "numeric", default_value => 0, is_nullable => 1, size => "3,6" },
 );
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.04004 @ 2008-04-12 11:22:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xBa2GiNvrJSbZi7K/hFcCw
+# Created by DBIx::Class::Schema::Loader v0.04004 @ 2008-06-03 23:19:44
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hi3+YjzjXeEJORZi0ZoOWg
 
 __PACKAGE__->has_many(
   "dists",

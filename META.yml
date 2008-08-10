@@ -1,6 +1,6 @@
 ---
 name: Module-CPANTS-ProcessCPAN
-version: 0.76
+version: 0.77
 author:
   - 'Thomas Klausner, <domm@cpan.org>, http://domm.zsi.at'
 abstract: Generate Kwalitee ratings for the whole CPAN
@@ -25,7 +25,7 @@ provides:
     file: lib/Module/CPANTS/MyBuild.pm
   Module::CPANTS::ProcessCPAN:
     file: lib/Module/CPANTS/ProcessCPAN.pm
-    version: 0.76
+    version: 0.77
   Module::CPANTS::Schema:
     file: lib/Module/CPANTS/Schema.pm
   Module::CPANTS::Schema::Author:

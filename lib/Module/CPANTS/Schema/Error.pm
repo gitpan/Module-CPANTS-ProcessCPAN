@@ -5,7 +5,7 @@ use warnings;
 
 use base 'DBIx::Class';
 
-__PACKAGE__->load_components("InflateColumn", "PK", "Core");
+__PACKAGE__->load_components("ResultSetManager", "InflateColumn", "PK", "Core");
 __PACKAGE__->table("error");
 __PACKAGE__->add_columns(
   "id",
@@ -67,12 +67,7 @@ __PACKAGE__->add_columns(
     size => undef,
   },
   "no_generated_files",
-  {
-    data_type => "text",
-    default_value => undef,
-    is_nullable => 1,
-    size => undef,
-  },
+  { data_type => "text", default_value => 0, is_nullable => 0, size => undef },
   "has_version_in_each_file",
   {
     data_type => "text",
@@ -129,12 +124,33 @@ __PACKAGE__->add_columns(
     is_nullable => 1,
     size => undef,
   },
+  "has_no_patches_in_debian",
+  {
+    data_type => "text",
+    default_value => undef,
+    is_nullable => 1,
+    size => undef,
+  },
+  "latest_version_distributed_by_debian",
+  {
+    data_type => "text",
+    default_value => undef,
+    is_nullable => 1,
+    size => undef,
+  },
+  "has_no_bugs_reported_in_debian",
+  {
+    data_type => "text",
+    default_value => undef,
+    is_nullable => 1,
+    size => undef,
+  },
 );
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.04004 @ 2008-04-12 11:22:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ix0VQZuG4FVKH2tNa5ONNw
+# Created by DBIx::Class::Schema::Loader v0.04004 @ 2008-06-03 23:19:44
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fsbF0avf0J6yhRHAGwvpyQ
 
 __PACKAGE__->belongs_to("dist", "Module::CPANTS::Schema::Dist", { id => "dist" });
 

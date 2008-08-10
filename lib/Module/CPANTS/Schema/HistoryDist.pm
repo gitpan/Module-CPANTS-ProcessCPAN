@@ -5,7 +5,7 @@ use warnings;
 
 use base 'DBIx::Class';
 
-__PACKAGE__->load_components("InflateColumn", "PK", "Core");
+__PACKAGE__->load_components("ResultSetManager", "InflateColumn", "PK", "Core");
 __PACKAGE__->table("history_dist");
 __PACKAGE__->add_columns(
   "id",
@@ -16,8 +16,6 @@ __PACKAGE__->add_columns(
     size => 4,
   },
   "run",
-  { data_type => "integer", default_value => undef, is_nullable => 1, size => 4 },
-  "dist",
   { data_type => "integer", default_value => undef, is_nullable => 1, size => 4 },
   "distname",
   {
@@ -34,18 +32,15 @@ __PACKAGE__->add_columns(
     size => undef,
   },
   "kwalitee",
-  {
-    data_type => "numeric",
-    default_value => undef,
-    is_nullable => 1,
-    size => "3,6",
-  },
+  { data_type => "numeric", default_value => 0, is_nullable => 0, size => "3,6" },
+  "dist",
+  { data_type => "integer", default_value => undef, is_nullable => 1, size => 4 },
 );
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.04004 @ 2008-04-12 11:22:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qux81flGASbu0ulXEhbpuw
+# Created by DBIx::Class::Schema::Loader v0.04004 @ 2008-06-03 23:19:44
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:C6axc6jrMxO0sGHyzk9AxA
 
 __PACKAGE__->belongs_to("run", "Module::CPANTS::Schema::Run", { id => "run" });
 
